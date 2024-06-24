@@ -34,15 +34,11 @@ class TextOperations:
             replace_text, ok2 = QInputDialog.getText(self.main_window, "Замена текста", "Заменить на:")
             if ok2:
                 cursor = self.main_window.text_edit.textCursor()
-                cursor.beginEditBlock()
+                found = cursor.document().find(find_text)
 
-                doc = self.main_window.text_edit.document()
-                pos = 0
-                while True:
-                    cursor = doc.find(find_text, pos)
-                    if cursor.isNull():
-                        break
-                    cursor.insertText(replace_text)
-                    pos = cursor.position()
-
-                cursor.endEditBlock()
+                if not found.isNull():
+                    while not found.isNull():
+                        found.insertText(replace_text)
+                        found = cursor.document().find(find_text, found.position() + len(replace_text))
+                else:
+                    QMessageBox.information(self.main_window, "Нет совпадений", "Текст не найден.")
